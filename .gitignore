@@ -2,3 +2,4 @@
 *.ini
 .venv/
 __pycache__
+interfaces-prac-firebase.json

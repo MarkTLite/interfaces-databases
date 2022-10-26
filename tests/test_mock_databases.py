@@ -6,16 +6,8 @@ from providers.file_system_provider import FileStoreProvider
 from providers.sqlite_provider import SQLiteProvider
 from phoneBook import PhoneBook
 
-class PhoneBookFSTests(unittest.TestCase):
-    """Tests for File and SQL usage by the phonebook"""
-    def getDatabaseService(self,db_name):
-        """choose database service"""
-        if db_name == "filesystem":
-            self.provider = FileStoreProvider()
-            self.location = './databases/PhoneBookFileSystemDb/contacts.txt'
-        elif db_name == "sqlitedatabase":
-            self.provider = SQLiteProvider()
-            self.location = 'sqlite:///databases/shop.db'
+class PhoneBookMockTests(unittest.TestCase):
+    """Mock Tests to deliberately handle the Exceptions not handled in test_databases.py for all db providers"""
 
     def db_service(self,db_name):
         self.getDatabaseService(db_name)

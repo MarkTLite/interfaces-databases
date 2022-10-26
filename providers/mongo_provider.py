@@ -60,7 +60,7 @@ class MongoDBProvider(DatabaseInterface):
         
         except (Exception) as error:
             print(error)
-            return (False, "Error")
+            return (False, "Error", {})
 
     def update(self, location: str, data: dict):
         try:

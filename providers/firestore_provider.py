@@ -1,44 +1,66 @@
 from database_interface import DatabaseInterface
 from firebase_admin import firestore
 
+
 class FireStoreProvider(DatabaseInterface):
     """Implements the [DatabaseInterface] methods to persist data on a firestore database."""
-    def __init__(self):
-        self.db = None
+    def __init__(self):   
+        self.connect()
 
     def connect(self):
         try:        
+            print('Connecting to firestore db')
             self.db = firestore.Client(project='interfaces-prac')
             print('Connected to firestore successfully')
-        except(Exception) as err:
-            print(f'Error: {err}')
+            return (True, "Connection Successful")
 
-    def create(self, data: dict, collection_name:str, doc_id):
-        try:
-            doc_ref = self.db.collection(collection_name).document(f'{doc_id}')
-            doc_ref.set(data)
         except(Exception) as err:
             print(f'Error: {err}')
+            return (False, "Error")
+
+    def create(self, location: str, data: dict):
+        try:
+            doc_id = data['contact list'][0][0]
+            doc_ref = self.db.collection(location).document(f'{doc_id}')
+            doc_ref.set({
+                'contact_name': doc_id,
+                'contact_number': data['contact list'][0][1]
+                })            
+            return (True, "Created")
+
+        except(Exception) as err:
+            print(f'Error: {err}')
+            return (False, "Error")
    
-    def read(self, collection_name:str, doc_id):
+    def read(self, location:str):
         try:
-            doc_ref = self.db.collection(collection_name).document(f'{doc_id}')
-            doc = doc_ref.get()
-            if doc.exists:
-                print(f'Document data: {doc.to_dict()}')
-            else:
-                print(u'No such document!')
-            pass
+            docs = self.db.collection(location).stream()
+            data = {'list':[]}   
+            for doc in docs:
+                data['list'].append(doc.to_dict())                      
+
+            return (True, "Read Successful", data)          
+
         except(Exception) as err:
             print(f'Error: {err}')
+            return (False, "Error", {})
 
-    def update(self, data: dict, collection_name: str, doc_id):
-        doc_ref = self.db.collection(collection_name).document(f'{doc_id}')
-        doc_ref.update(data)
+    def update(self, location: str, data: dict):
+        doc_id = data['contact'][1]
+        doc_ref = self.db.collection(location).document(f'{doc_id}')
+        doc_ref.update({
+                'contact_name': doc_id,
+                'contact_number': data['contact'][0]
+                })
+        return (True, "Updated Succesfully")
 
-    def delete(self, collection_name: str, doc_id):
-        doc_ref = self.db.collection(collection_name).document(f'{doc_id}')
+    def delete(self, location: str, data: dict):
+        doc_id = data['contact'][0]
+        doc_ref = self.db.collection(location).document(f'{doc_id}')
         doc_ref.delete()
 
+        return (True, "Updated Succesfully")
+
     def disconnect(self):
-        self.db.close()
+        return (True, "Disconnected")
+        
