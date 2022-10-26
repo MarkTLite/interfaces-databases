@@ -1,27 +1,28 @@
+from datetime import datetime
 import os
 import mongoengine as db_engine
 
 from database_interface import DatabaseInterface
 from dotenv import load_dotenv
 
-class Phonebook(db_engine.Document):
-    """Create a phonebook document collection"""
-
-    book_id = db_engine.IntField()
-    name = db_engine.StringField()
-    author = db_engine.StringField()
+class ContactBook(db_engine.Document):
+    """Create a PhoneBook document collection"""
+    id = datetime.utcnow()
+    contact_name = db_engine.StringField()
+    contact_number = db_engine.StringField()
 
     def to_json(self):
         return {
-            "book_id": self.book_id,
-            "name": self.name,
-            "author": self.author
+            "id": self.id,
+            "contact_name": self.contact_name,
+            "contact_number": self.contact_number
         }
 
 class MongoDBProvider(DatabaseInterface):
     """Implements the [DatabaseInterface] methods to persist data on a mongoDB database."""
     def __init__(self) -> None:
         self.book = None
+        self.connect()
 
     def connect(self):
         try:
@@ -37,27 +38,52 @@ class MongoDBProvider(DatabaseInterface):
             return (False, "Error")
 
     def create(self, location: str, data: dict):        
-        book = Phonebook(
-            book_id = id,
-            name = name,
-            author = author
-        )
-        book.save()
-        return book
+        try:
+            self.book = ContactBook(
+                contact_name = data['contact list'][0][0],
+                contact_number = data['contact list'][0][1]
+            )
+            self.book.save()
+            return (True, 'Created')
 
-    def read(self,location: str, data: dict):
-        book = Phonebook.objects(book_id=id).first()
-        return book.to_json()
+        except (Exception) as error:
+            print(error)
+            return (False, "Error")
 
-    def update(self,location: str, data: dict):
-        book = Phonebook.objects(book_id=id).first()
-        book.update(name="Harry Potter", author="J.K. Rowling")
-        return book
+    def read(self,location: str):
+        try:
+            data = {'list':[]}
+            for contact in ContactBook.objects:
+                data['list'].append(contact.to_json()) 
+
+            return (True, 'Read Successful', data)
+        
+        except (Exception) as error:
+            print(error)
+            return (False, "Error")
+
+    def update(self, location: str, data: dict):
+        try:
+            contact_name = data['contact'][1]  # from the test
+            contact_number = data['contact'][0]
+            self.book = ContactBook.objects(contact_name=contact_name).first()
+            self.book.update(contact_name=contact_name, contact_number=contact_number)
+            return (True, 'Update Successful')
+
+        except (Exception) as error:
+            print(error)
+            return (False, "Error")
 
     def delete(self,location: str, data: dict):
-        book = Phonebook.objects(book_id=id).first()
-        print(f'deleting book: {book.to_json()}')
-        book.delete()
+        try:
+            contact_name = data['contact'][0]  # from the test
+            self.book = ContactBook.objects(contact_name=contact_name).first()
+            self.book.delete()
+            return (True, 'Delete Successful')
+
+        except (Exception) as error:
+            print(error)
+            return (False, "Error")
 
     def disconnect(self):
         return (True, "Disconnected")

@@ -4,54 +4,83 @@ path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0,path)
 from phoneBook import PhoneBook
 from providers.postgres_provider import PostgresDBProvider
+from providers.mongo_provider import MongoDBProvider
 
-class PhoneBookPostgresTests(unittest.TestCase):
-    """Tests for PostgresSQL usage by the phonebook"""
+class PhoneBookAllTests(unittest.TestCase):
+    """Unit tests. Since dependency change should not fail the system, this class' tests are applicable to all supported
+    db types: PostgresSQL, MongoDB. no need for other test modules
+     Run tests when one is chosen by the phonebook"""
 
-    def getDatabaseService(self,db_name):
+    db_name = None
+    def getDatabaseService(self, db_name):
         """choose database service"""
         if db_name == "postgres":
             self.provider = PostgresDBProvider()
             self.location = ''
-
-    def db_service(self,db_name):
-        self.getDatabaseService(db_name)
-        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
-        phoneBook.setupSystem()        
-        return phoneBook
+        elif db_name == "mongoDB":
+            self.provider = MongoDBProvider()
+            self.location = ''
 
     def test_setup_system(self):
-        self.getDatabaseService('postgres')
+        self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         returned = phoneBook.setupSystem() 
         expected = (True, 'Connection Successful')
-        self.assertEqual(returned, expected, "Check Postgres connect test")
+        self.assertEqual(returned, expected, f"Check {self.db_name} connect test")
 
     def test_close_phonebook(self):
-        self.getDatabaseService('postgres')
+        self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         returned = phoneBook.closePhonebook()
         expected = 'Phonebook Closed'
-        self.assertEqual(returned, expected, "Check Postgres disconnect test")
+        self.assertEqual(returned, expected, f"Check {self.db_name} disconnect test")
 
     def test_create_phonebook(self):
-        self.getDatabaseService('postgres')
+        self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         data = {
             "contact list":[
         ('Mark',"+256751079239"),
-        ('Asahi Glass Co Ltd.',"+256751079239"),
-        ('Daikin Industries Ltd.',"+256751079239"),
-        ('Dynacast International Inc.',"+256751079239"),
-        ('Foster Electric Co. Ltd.',"+256751079239"),
-        ('Murata Manufacturing Co. Ltd.',"+256751079239")
     ]}
         returned = phoneBook.createContact(data)        
         expected = (True, 'Contact created successfully')
-        self.assertEqual(returned, expected, "Check Postgres create test")
+        self.assertEqual(returned, expected, f"Check {self.db_name} create test")
+
+    def test_list_contacts(self):
+        self.getDatabaseService(self.db_name)
+        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
+        returned = phoneBook.listContacts()
+        self.assertIn(True, returned, f"Check {self.db_name} list all test")
+
+    def test_edit_contact(self):
+        self.getDatabaseService(self.db_name)
+        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
+        data = {
+            "contact":("+0000000000","Mark")
+        }
+        returned = phoneBook.editContact(data)
+        expected = (True, "Contact updated successfully")
+        self.assertEqual(returned, expected, f"Check {self.db_name} editContact test")
+    
+    def test_delete_contact(self):
+        self.getDatabaseService(self.db_name)
+        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
+        data = {
+            "contact":("Mark",)
+        }
+        returned = phoneBook.deleteContact(data)
+        expected = (True, "Contact deleted successfully")
+        self.assertEqual(returned, expected, "Check MongoDB deleteContact test")
+
+    def test_shutdown(self):
+        self.getDatabaseService(self.db_name)
+        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)        
+        returned = phoneBook.closePhonebook()
+        expected = "Phonebook Closed"
+        self.assertEqual(returned, expected, "Check Shut Phonebook test")
 
     # def test_fail_create(self):
-    #     self.getDatabaseService('postgres')
+    #     self.getDatabaseService(self.db_name)
     #     phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
     #     data = {
     #         "contact lis":[
@@ -59,31 +88,13 @@ class PhoneBookPostgresTests(unittest.TestCase):
     # ]}
     #     returned = phoneBook.createContact(data)        
     #     expected = (False, "Failed to create contact Error")
-    #     self.assertEqual(returned, expected, "Check Postgres fail create test")
-
-
-    def test_list_contacts(self):
-        self.getDatabaseService('postgres')
-        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
-        returned = phoneBook.listContacts()
-        self.assertIn(True, returned, "Check Postgres list all test")
+    #     self.assertEqual(returned, expected, f"Check {self.db_name} fail create test")
 
     # def test_fail_list_contacts(self):
     #     db_service=self.db_service('postgres')
     #     output = db_service.listContacts()
     #     expected = (False, 'failed to read contact', "")
     #     assert output, expected
-
-
-    def test_edit_contact(self):
-        self.getDatabaseService('postgres')
-        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
-        data = {
-            "contact":("+0000000000","Asahi Glass Co Ltd.")
-        }
-        returned = phoneBook.editContact(data)
-        expected = (True, "Contact updated successfully")
-        self.assertEqual(returned, expected, "Check Postgres editContact test")
 
 #     def test_fail_edit_contact(self):
 #         db_service=self.db_service('postgres')
@@ -92,24 +103,6 @@ class PhoneBookPostgresTests(unittest.TestCase):
 #         reason = "failed to update contact"
 #         expected = (False, reason)
 #         assert output, expected
-
-
-    def test_delete_contact(self):
-        self.getDatabaseService('postgres')
-        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
-        data = {
-            "contact":("Asahi Glass Co Ltd.",)
-        }
-        returned = phoneBook.deleteContact(data)
-        expected = (True, "Contact deleted successfully")
-        self.assertEqual(returned, expected, "Check Postgres deleteContact test")
-
-    def test_shutdown(self):
-        self.getDatabaseService('postgres')
-        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)        
-        returned = phoneBook.closePhonebook()
-        expected = "Phonebook Closed"
-        self.assertEqual(returned, expected, "Check Shut Phonebook test")
 
 #     def test_sql_create_contact(self):
 #         db_service = self.db_service('sqlitedatabase')
@@ -176,5 +169,18 @@ class PhoneBookPostgresTests(unittest.TestCase):
 #         instance = Database.get_instance(provider=FileStoreProvider())
 #         assert type(instance) == Database
 
-if __name__=='__main__':     
-    unittest.main()
+if __name__=='__main__':
+     
+    if len(sys.argv) > 1:
+        PhoneBookAllTests.db_name = sys.argv.pop()
+
+    if (PhoneBookAllTests.db_name == 'postgres' or PhoneBookAllTests.db_name == 'mongoDB'):
+        unittest.main()
+
+    else:
+        print('Provide an expected dependency argument eg "postgres", or "mongoDB"')
+
+    # PhoneBookPostgresTests.db_name = "postgres"     
+    # unittest.main()
+    # PhoneBookPostgresTests.db_name = "postgres"     
+    # unittest.main()
