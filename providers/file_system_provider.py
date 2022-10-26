@@ -3,22 +3,20 @@ from DbInterfaceSingleton import DatabaseInterface
 
 class FileStoreProvider(DatabaseInterface):
     """A file system provider that implements the DatabaseInterface methods to persist data 
-        on the filesystem and not an actual database."""
-    def __init__(self):
-        pass
-
+        on the filesystem"""
+        
     def connect(self):
-        pass
+        return (True, 'Connection Successful')
     
     def disconnect(self):
-        pass
+        return (True, "Disconnected")
 
     def create(self, location: str, data: dict):
         """creates a file and stores in that file location. Returns a Tuple with a boolean and a string."""
         try:
             file = open(location, mode='w', encoding='utf-8' )
             for content in data:                
-                file.write(content +',')
+                file.write(content +':')
                 file.write(data[content] +'\n')    
 
         except(Exception):

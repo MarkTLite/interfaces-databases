@@ -1,12 +1,12 @@
-"""A Phonebook CLI. Uses dependency injection to use a particular database type
-Uses DatabaseInterfaceSingleton"""
+"""This Phonebook CLI uses dependency injection to change to a particular database type. System logic must remain applicable 
+regardless of the any newly added supported database type in the future"""
 
-from typing import Tuple
-from DbInterfaceSingleton import Database
+from database_interface import DatabaseInterface
 
 class PhoneBook:
-    """Class for the Phonebook CLI"""
-    def __init__(self, location: str, db_provider: Database) -> None:
+    """Class for the Phonebook CLI. 
+    - location: is the location of the database"""
+    def __init__(self, location: str, db_provider: DatabaseInterface) -> None:
         self.db_provider = db_provider
         self.location = location
 
@@ -14,7 +14,7 @@ class PhoneBook:
         print("Starting up System")
         return self.db_provider.connect()
 
-    def createContact(self, data: dict) -> Tuple[bool, str]:
+    def createContact(self, data: dict) -> tuple[bool, str]:
         print("Creating contact")     
         created, reason = self.db_provider.create(self.location, data)
         if not created:
@@ -26,7 +26,7 @@ class PhoneBook:
         print(reason)
         return (True, reason)
 
-    def listContacts(self) -> Tuple[bool, str, dict]:
+    def listContacts(self) -> tuple[bool, str, dict]:
         print("Viewing all contact information")
         read, reason, output = self.db_provider.read(self.location)
         if not read:
@@ -38,7 +38,7 @@ class PhoneBook:
         print(output)
         return (True, reason, output)
 
-    def editContact(self, data: dict) -> Tuple[bool, str]:
+    def editContact(self, data: dict) -> tuple[bool, str]:
         print("Updating contact")
         updated, reason = self.db_provider.update(self.location, data)
         print(reason)
@@ -51,7 +51,7 @@ class PhoneBook:
         print(reason)
         return (True, reason)
 
-    def deleteContact(self, data:dict) -> Tuple[bool, str]:
+    def deleteContact(self, data:dict) -> tuple[bool, str]:
         print("Deleting contact information")
         deleted, reason = self.db_provider.delete(self.location,data)
         if not deleted:

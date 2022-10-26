@@ -1,4 +1,4 @@
-"""A Database class that applies Singleton, Dependency injection and Interfaces"""
+"""A Database class to apply Singleton, Dependency injection and Interfaces"""
 from database_interface import DatabaseInterface
 
 instance = None
