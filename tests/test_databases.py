@@ -14,25 +14,25 @@ from providers.firestore_provider import FireStoreProvider
 class PhoneBookAllTests(unittest.TestCase):
     """Unit tests. Since dependency change should not fail the system, this class' tests are applicable to all supported
     db types: FileSystem, SQLAlchemy, PostgresSQL, MongoDB, Firestore. 
-    No need for test modules for each.
+    No need for new test modules for if you wish to add another provider.
     Run tests when one dependency choice is given by cli argument to the phonebook"""
 
     db_name = None
-    def getDatabaseService(self, db_name):
+    def getDatabaseService(self):
         """choose database service"""
-        if db_name == "filesystem":
+        if self.db_name == "filesystem":
             self.provider = FileStoreProvider()
             self.location = path + '\databases\PhoneBookFileSystemDb\contacts.json'
-        elif db_name == "sqlite":
+        elif self.db_name == "sqlite":
             self.location = 'sqlite:///databases/shop.db'
             self.provider = SQLiteProvider(self.location)            
-        elif db_name == "postgres":
+        elif self.db_name == "postgres":
             self.provider = PostgresDBProvider()
             self.location = ''
-        elif db_name == "mongoDB":
+        elif self.db_name == "mongoDB":
             self.provider = MongoDBProvider()
             self.location = ''
-        elif db_name == "firestore":
+        elif self.db_name == "firestore":
             self.provider = FireStoreProvider()
             self.location = 'phonebook' # the phonebook collection on firestore
         
