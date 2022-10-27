@@ -46,20 +46,26 @@ class FireStoreProvider(DatabaseInterface):
             return (False, "Error", {})
 
     def update(self, location: str, data: dict):
-        doc_id = data['contact'][1]
-        doc_ref = self.db.collection(location).document(f'{doc_id}')
-        doc_ref.update({
+        try:
+           doc_id = data['contact'][1]
+           doc_ref = self.db.collection(location).document(f'{doc_id}')
+           doc_ref.update({
                 'contact_name': doc_id,
                 'contact_number': data['contact'][0]
                 })
-        return (True, "Updated Succesfully")
+           return (True, "Updated Succesfully")
+        except:
+            return (False, "Error")
 
     def delete(self, location: str, data: dict):
-        doc_id = data['contact'][0]
-        doc_ref = self.db.collection(location).document(f'{doc_id}')
-        doc_ref.delete()
+        try:
+            doc_id = data['contact'][0]
+            doc_ref = self.db.collection(location).document(f'{doc_id}')
+            doc_ref.delete()
 
-        return (True, "Updated Succesfully")
+            return (True, "Updated Succesfully")
+        except:
+            return(False, "Error")
 
     def disconnect(self):
         return (True, "Disconnected")

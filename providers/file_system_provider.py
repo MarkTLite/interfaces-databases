@@ -1,4 +1,4 @@
-from DbInterfaceSingleton import DatabaseInterface
+from database_interface import DatabaseInterface
 import json
 
 class FileStoreProvider(DatabaseInterface):
@@ -14,35 +14,34 @@ class FileStoreProvider(DatabaseInterface):
     def create(self, location: str, data: dict):
         """creates a file and stores in that file location. Returns a Tuple with a boolean and a string."""
         try:
-            file = open(location, mode='w', encoding='utf-8' )
-            json.dump(data, file, indent=4)
-            return (True, "Created")  
+            file = open(location, mode='w', encoding='utf-8')
+            if data:
+               json.dump(data, file, indent=4)
+               file.close() 
+               print("file closed")
+               return (True, "Created")
+            else:
+                raise Exception()  
 
         except(Exception):
             return (False, 'Error')
-
-        finally:
-            file.close() 
-            print("file closed")    
 
     def read(self, location: str):
         """ reads a file,returns a tuple - (boolean, string, and the dictionary containing the read data)"""
         try:
             file = open(location, mode='r', encoding='utf-8' )
             data = json.load(file)
+            file.close() 
+            print("file closed") 
             return (True, 'Read Successful', data)
 
         except(Exception):
-            return (False, 'Error', {})
-            
-        finally:
-            file.close() 
-            print("file closed")  
+            return (False, 'Error', {})             
 
     def update(self, location: str, data: dict):
         """updates a given file, returns a boolean, string tuple."""
-        data = [data['contact'][1], data['contact'][0]]
         try:
+            data = [data['contact'][1], data['contact'][0]]
             file = open(location, mode='r+', encoding='utf-8' )
             read = json.load(file)
             for table in read.values():
@@ -53,21 +52,19 @@ class FileStoreProvider(DatabaseInterface):
                         file.seek(0)
                     count += 1
             file.close()
-            self.create(location, read)                               
+            self.create(location, read)
+            file.close() 
+            print("file closed")                               
 
             return (True, 'Update Successful')
 
         except(Exception):
             return (False, 'Error')
-            
-        finally:
-            file.close() 
-            print("file closed") 
 
     def delete(self, location: str, data: dict):
         """Perform the delete operation in a given file, returns a boolean, string tuple"""
-        name = data['contact'][0]
         try:
+            name = data['contact'][0]
             file = open(location, mode='r+', encoding='utf-8' )
             read = json.load(file)
             for table in read.values():
@@ -77,14 +74,12 @@ class FileStoreProvider(DatabaseInterface):
                         read['contact list'].pop(count)
                         print(read)
             file.close()
-            self.create(location, read)                               
+            self.create(location, read)     
+            file.close() 
+                       
 
             return (True, 'Delete Successful')
 
         except(Exception):
             return (False, 'Error')
-            
-        finally:
-            file.close() 
-            print("file closed") 
-        return self.update(location, data)       
+             

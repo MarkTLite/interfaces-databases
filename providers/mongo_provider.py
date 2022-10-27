@@ -52,6 +52,8 @@ class MongoDBProvider(DatabaseInterface):
 
     def read(self,location: str):
         try:
+            if location is None:
+                raise Exception()
             data = {'list':[]}
             for contact in ContactBook.objects:
                 data['list'].append(contact.to_json()) 

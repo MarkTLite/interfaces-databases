@@ -43,8 +43,8 @@ class PhoneBook:
         updated, reason = self.db_provider.update(self.location, data)
         print(reason)
         if not updated:
+            reason = "failed to update contact " + reason
             print(reason)
-            reason = "failed to update contact"
             return (False, reason)
 
         reason = "Contact updated successfully"
@@ -55,8 +55,8 @@ class PhoneBook:
         print("Deleting contact information")
         deleted, reason = self.db_provider.delete(self.location,data)
         if not deleted:
+            reason = "failed to delete contact "+ reason
             print(reason)
-            reason = "failed to delete contact"
             return False, reason
 
         reason = "Contact deleted successfully"

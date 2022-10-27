@@ -61,7 +61,11 @@ class PostgresDBProvider(DatabaseInterface):
             self.cursor = self.conn.cursor()
             self.cursor.execute(sql_command)            
             self.conn.commit()
-            self.insert(data=data)
+            if data: 
+               self.insert(data=data)
+            else:
+                raise Exception()
+
             self.cursor.close()
             self.conn.close()            
             return (True, 'Created')
@@ -79,6 +83,8 @@ class PostgresDBProvider(DatabaseInterface):
         sql = "SELECT * FROM phonebook"
         self.conn = None
         try:
+            if location is None:
+                raise Exception()
             params = self.read_db_config()
             self.conn = psycopg2.connect(**params)
             self.cursor = self.conn.cursor()
@@ -107,9 +113,12 @@ class PostgresDBProvider(DatabaseInterface):
             params = self.read_db_config()
             self.conn = psycopg2.connect(**params)
             self.cursor = self.conn.cursor()
-            self.cursor.executemany(sql,data['contact list'])
-            self.conn.commit()
-            return (True, 'Insert Successful')
+            if data:
+               self.cursor.executemany(sql,data['contact list'])
+               self.conn.commit()
+               return (True, 'Insert Successful')
+            else:
+                raise Exception()
 
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -122,6 +131,8 @@ class PostgresDBProvider(DatabaseInterface):
                     WHERE contact_name = %s"""
         self.conn = None
         try:
+            if data is None:
+                raise Exception()
             params = self.read_db_config()
             self.conn = psycopg2.connect(**params)
             self.cursor = self.conn.cursor()

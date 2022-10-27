@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, MetaData, String, Table, create_engine
 
-from DbInterfaceSingleton import DatabaseInterface
+from database_interface import DatabaseInterface
 
 
 class SQLiteProvider(DatabaseInterface):
@@ -52,7 +52,9 @@ class SQLiteProvider(DatabaseInterface):
     def read(self, location: str):
         """ reads a file,returns a tuple - (boolean, string, and the dictionary containing the read data)"""
         data, data_dict = [], {}
-        try:            
+        try: 
+            if location is None:
+                raise Exception()           
             sql = "SELECT * FROM phonebook"
             result = self.conn.execute(sql)
 

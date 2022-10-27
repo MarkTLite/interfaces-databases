@@ -15,7 +15,7 @@ class PhoneBookAllTests(unittest.TestCase):
     """Unit tests. Since dependency change should not fail the system, this class' tests are applicable to all supported
     db types: FileSystem, SQLAlchemy, PostgresSQL, MongoDB, Firestore. 
     No need for test modules for each.
-    Run tests when one is chosen by the phonebook"""
+    Run tests when one dependency choice is given by cli argument to the phonebook"""
 
     db_name = None
     def getDatabaseService(self, db_name):
@@ -36,31 +36,32 @@ class PhoneBookAllTests(unittest.TestCase):
             self.provider = FireStoreProvider()
             self.location = 'phonebook' # the phonebook collection on firestore
         
-    def test_setup_system(self):
+    def test_0_setup_system(self):
         self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         returned = phoneBook.setupSystem() 
         expected = (True, 'Connection Successful')
         self.assertEqual(returned, expected, f"Check {self.db_name} connect test")
 
-    def test_create_contact(self):
+    def test_1_create_contact(self):
         self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         data = {
             "contact list":[
-        ('Mark@gmail.com',"+256751079239"),            
+        ('Mark@gmail.com',"+256751079239"), 
+        ('John@gmail.com',"+254751079239"),          
     ]}
         returned = phoneBook.createContact(data)        
         expected = (True, 'Contact created successfully')
         self.assertEqual(returned, expected, f"Check {self.db_name} create test")
 
-    def test_list_contacts(self):
+    def test_2_list_contacts(self):
         self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         returned = phoneBook.listContacts()
         self.assertIn(True, returned, f"Check {self.db_name} list all test")
 
-    def test_edit_contact(self):
+    def test_3_edit_contact(self):
         self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         data = {
@@ -70,7 +71,7 @@ class PhoneBookAllTests(unittest.TestCase):
         expected = (True, "Contact updated successfully")
         self.assertEqual(returned, expected, f"Check {self.db_name} editContact test")
     
-    def test_delete_contact(self):
+    def test_4_delete_contact(self):
         self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         data = {
@@ -78,15 +79,44 @@ class PhoneBookAllTests(unittest.TestCase):
         }
         returned = phoneBook.deleteContact(data)
         expected = (True, "Contact deleted successfully")
-        self.assertEqual(returned, expected, "Check MongoDB deleteContact test")
+        self.assertEqual(returned, expected, f"Check {self.db_name} deleteContact test")
 
-    def test_close_phonebook(self):
+    def test_5_fail_create_contact(self):
+        self.getDatabaseService(self.db_name)
+        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
+        data = None
+        returned = phoneBook.createContact(data)        
+        expected = (False, "Failed to create contact Error")
+        self.assertEqual(returned, expected, f"Check {self.db_name} create fail test")
+
+    def test_6_fail_list_contacts(self):
+        self.getDatabaseService(self.db_name)
+        phoneBook = PhoneBook(location= None, db_provider=self.provider)
+        returned = phoneBook.listContacts()
+        self.assertIn(False, returned, f"Check {self.db_name} list all fail test")
+
+    def test_7_fail_edit_contact(self):
+        self.getDatabaseService(self.db_name)
+        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
+        data = None
+        returned = phoneBook.editContact(data)
+        expected = (False, "failed to update contact Error")
+        self.assertEqual(returned, expected, f"Check {self.db_name} editContact fail test")
+    
+    def test_8_fail_delete_contact(self):
+        self.getDatabaseService(self.db_name)
+        phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
+        data = None
+        returned = phoneBook.deleteContact(data)
+        expected = (False, "failed to delete contact Error")
+        self.assertEqual(returned, expected, f"Check {self.db_name} deleteContact fail test")
+
+    def test_9_close_phonebook(self):
         self.getDatabaseService(self.db_name)
         phoneBook = PhoneBook(location= self.location, db_provider=self.provider)
         returned = phoneBook.closePhonebook()
         expected = 'Phonebook Closed'
         self.assertEqual(returned, expected, f"Check {self.db_name} disconnect test")
-
 
 if __name__=='__main__':
     if len(sys.argv) > 1:
@@ -106,4 +136,4 @@ if __name__=='__main__':
         fireapp._cleanup()
 
     else:
-        print('Provide an expected dependency argument. Choose 1 of the supported dbs:\n1. "postgres"\n2. "mongoDB"\n3. "firestore"\n4. "sqlite"\n5. "filesystem"')
+        print('Provide an expected dependency argument. Choose 1 of the supported dbs:\n1. postgres\n2. mongoDB\n3. firestore\n4. sqlite\n5. filesystem')
