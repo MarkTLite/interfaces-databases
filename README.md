@@ -6,7 +6,7 @@
 ## Description
  This project involves the application of design patterns to develop a phonebook cli with the following advantages:
  - High extensibility (Providers can be added without complicating the codebase at all)
- - Dependency change does not fail the system
+ - Dependency change does not fail the system.
 
 ### Concepts applied
 - Interfaces
