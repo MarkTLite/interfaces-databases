@@ -1,9 +1,14 @@
-# PhoneBook CLI (Interfaces)
+# Interfaces (Databases)
+[![codecov](https://codecov.io/gh/MarkTLite/chat-cli-kafka/branch/main/graph/badge.svg?token=D1GG1EUSJL)](https://codecov.io/gh/MarkTLite/chat-cli-kafka)
+![Test status](https://github.com/MarkTLite/chat-cli-kafka/actions/workflows/testcov.yml/badge.svg)
+![Build Status](https://github.com/MarkTLite/landing-page-react/actions/workflows/heroku_deployer.yaml/badge.svg)
 
 ## Description
-A PhoneBook CLI.  
+ This project involves the application of design patterns to develop a phonebook cli with the following advantages:
+ - High extensibility (Providers can be added without complicating the codebase at all)
+ - Dependency change does not fail the system
 
-## Concepts applied
+### Concepts applied
 - Interfaces
 - Dependency Injection
 - Singleton pattern
@@ -34,7 +39,8 @@ use -a to append individual tests<br/>
 coverage run tests\test_databases.py filesystem && coverage run -a tests\test_databases.py sqlite && coverage run -a tests\test_databases.py postgres && coverage run -a tests\test_databases.py mongoDB && coverage run -a tests\test_databases.py firestore
 </code><br/>
 then <br/>
-<code>coverage report</code>
+<code>coverage report</code><br/>
+add this to the testcov.yml file too
 
 ## Environment files
 Add these files in the /providers folder before running.
