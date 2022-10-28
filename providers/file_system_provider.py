@@ -27,16 +27,16 @@ class FileStoreProvider(DatabaseInterface):
             return (False, 'Error')
 
     def read(self, location: str):
-        """ reads a file,returns a tuple - (boolean, string, and the dictionary containing the read data)"""
-        try:
+            """ reads a file,returns a tuple - (boolean, string, and the dictionary containing the read data)"""
+        # try:
             file = open(location, mode='r', encoding='utf-8' )
             data = json.load(file)
             file.close() 
             print("file closed") 
             return (True, 'Read Successful', data)
 
-        except(Exception):
-            return (False, 'Error', {})             
+        # except(Exception):
+        #     return (False, 'Error', {})             
 
     def update(self, location: str, data: dict):
         """updates a given file, returns a boolean, string tuple."""

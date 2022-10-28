@@ -5,14 +5,14 @@
 
 ## Description
  This project involves the application of design patterns to develop a phonebook cli with the following advantages:
- - High extensibility (Providers can be added without complicating the codebase at all)
+ - High extensibility (Providers' function definitions can be added without complicating the codebase at all)
  - Dependency change does not fail the system.
 
 ### Concepts applied
 - Interfaces
 - Dependency Injection
+- Databases: PostgreSQL, mongoDB, firestore, sqlalchemy, filesystem
 - Singleton pattern
-- postgresql, mongoDB, firestore, sqlalchemy, filesystem databases.
 - db versioning with alembic
 
 ## Adding Providers
