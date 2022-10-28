@@ -9,9 +9,9 @@
  - Dependency change does not fail the system.
 
 ### Concepts applied
+- Databases: PostgreSQL, mongoDB, firestore, sqlalchemy, filesystem
 - Interfaces
 - Dependency Injection
-- Databases: PostgreSQL, mongoDB, firestore, sqlalchemy, filesystem
 - Singleton pattern
 - db versioning with alembic
 
