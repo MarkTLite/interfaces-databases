@@ -1,5 +1,6 @@
 *.env
 *.ini
 .venv/
+.coverage
 __pycache__
 interfaces-prac-firebase.json
