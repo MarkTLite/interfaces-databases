@@ -56,7 +56,8 @@ Add these files in the /providers folder before running.
     MONGO_URI=****
 
 ### The service account json for firestore
-    {}
+    {
+    }
 
 ## alembic
 Used for db change mgt and versioning to have reversible changes and avoid loss of data during db restructuring. Run:<br/>
